@@ -58,6 +58,14 @@ wheels = [
 ]
 
 [[package]]
+name = "drf-writable-nested"
+version = "0.7.2"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e8/57/df87d92fbfc3f0f2ef1a49c47f2a83389a4a13b7acf62b8bf7b223627d82/drf_writable_nested-0.7.2-py3-none-any.whl", hash = "sha256:4a3d2737c1cbfafa690e30236b169112e5b23cfe3d288f3992b0651a1b828c4d", size = 10570, upload-time = "2025-03-10T19:59:05.482Z" },
+]
+
+[[package]]
 name = "iniconfig"
 version = "2.3.1"
 source = { registry = "https://pypi.org/simple" }
@@ -74,6 +82,7 @@ dependencies = [
     { name = "django" },
     { name = "djangorestframework" },
     { name = "dotenv" },
+    { name = "drf-writable-nested" },
     { name = "pytest" },
     { name = "pytest-django" },
 ]
@@ -83,6 +92,7 @@ requires-dist = [
     { name = "django", specifier = ">=6.1.2" },
     { name = "djangorestframework", specifier = ">=3.18.3" },
     { name = "dotenv", specifier = ">=0.9.9" },
+    { name = "drf-writable-nested", specifier = ">=0.7.2" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-django", specifier = ">=4.14.0" },
 ]

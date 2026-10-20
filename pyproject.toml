@@ -8,6 +8,7 @@ dependencies = [
     "django>=6.1.2",
     "djangorestframework>=3.18.3",
     "dotenv>=0.9.9",
+    "drf-writable-nested>=0.7.2",
     "pytest>=9.1.1",
     "pytest-django>=4.14.0",
 ]

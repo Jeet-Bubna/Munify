@@ -1,12 +1,15 @@
 from rest_framework import serializers
+from drf_writable_nested.serializers import WritableNestedModelSerializer
 from .models import *
 
 class CommitteeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Committees
-        fields = '__all__' 
+        fields = ['name']
 
-class MunSerializer(serializers.ModelSerializer):
+class MunSerializer(WritableNestedModelSerializer):
+    committees = CommitteeSerializer(source='committees_set', many=True)
+
     class Meta:
         model = MUN
-        fields = '__all__'
+        fields = ['name','location','date', 'description', 'committees']
