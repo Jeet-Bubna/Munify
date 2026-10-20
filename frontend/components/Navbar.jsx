@@ -9,8 +9,8 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { id: 1, text: "Make a committee", link: "/make" },
-    { id: 2, text: "Join a committee", link: "/join" },
+    { id: 1, text: "Login", link: "/onboard" },
+    { id: 2, text: "Signup", link: "/onboard" },
     { id: 3, text: "About", link: "/about" },
   ];
 
