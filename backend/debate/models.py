@@ -1,15 +1,32 @@
 from django.db import models
+from datetime import date
+
+class MUN(models.Model):
+    """
+    Model for different MUNS
+    ### Fields
+    `id`: automatic
+    `name`: name of the mun
+    `location`: location
+    `date`: date of the mun (to be entered by form, default: datetime.date.today)
+    `description`:description
+    """
+    id = models.AutoField(primary_key=True)
+    name = models.CharField()
+    location = models.TextField()
+    date = models.DateField(default=date.today)
+    description = models.TextField()
 
 class Committees(models.Model):
     """
     Model for different committees. 
     ### Fields
     `id`:automatically created
-    `mun_name`: Name of the mun assosciated
+    `mun_id`: id of the mun
     `name`: name of the committee. (unsc, aippm, unhrc, etc)
     """
     id = models.AutoField(primary_key=True)
-    mun_name = models.CharField()
+    mun_id = models.ForeignKey(MUN, on_delete=models.CASCADE)
     name = models.CharField()
 
 class MarkScheme(models.Model):
