@@ -5,9 +5,11 @@ class Committees(models.Model):
     Model for different committees. 
     ### Fields
     `id`:automatically created
+    `mun_name`: Name of the mun assosciated
     `name`: name of the committee. (unsc, aippm, unhrc, etc)
     """
     id = models.AutoField(primary_key=True)
+    mun_name = models.CharField()
     name = models.CharField()
 
 class MarkScheme(models.Model):
@@ -105,8 +107,8 @@ class Points(models.Model):
     """
     id = models.AutoField(primary_key=True)
     motion_id = models.ForeignKey(Motions, on_delete=models.CASCADE)
-    delegate_from_id = models.ForeignKey(Delegates, on_delete=models.CASCADE)
-    delegate_to_id = models.ForeignKey(Delegates, on_delete=models.CASCADE)
+    delegate_from_id = models.ForeignKey(Delegates, on_delete=models.CASCADE, related_name="points_set_from")
+    delegate_to_id = models.ForeignKey(Delegates, on_delete=models.CASCADE, related_name="points_set_to")
     point_type = models.CharField()
     marks_awarded = models.PositiveSmallIntegerField()
     raised_at = models.DateTimeField(auto_now_add=True)

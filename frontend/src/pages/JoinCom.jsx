@@ -1,31 +1,40 @@
 import { useCallback, useEffect, useState } from "react";
 
-const API_BASE = "/api";
+const API_BASE = import.meta.env.VITE_API
+console.log(API_BASE)
 
 /**
- * Expected API responses
- *
- * GET /api/muns
- *   [{ "id": "1", "name": "Bangalore MUN 2026", "location": "Bengaluru",
- *      "date": "2026-11-14", "description": "Annual inter-school conference." }]
- *
- * GET /api/muns/:id/committees
- *   [{ "id": "10", "name": "UNSC", "topic": "Maritime security" }]
+ * Expected API response for GET /api/debate/get/muns:
+ * [
+ *   {
+ *     "id": "1",
+ *     "mun_name": "Bangalore MUN 2026",
+ *     "location": "Bengaluru",
+ *     "date": "2026-11-14",
+ *     "description": "...",
+ *     "committee": [
+ *       { "id": "10", "name": "UNSC", "topic": "Maritime security" }
+ *     ]
+ *   }
+ * ]
  */
 
 export async function fetchMuns(signal) {
-  const res = await fetch(`${API_BASE}/muns`, { signal });
-  if (!res.ok) throw new Error(`Could not load MUNs (${res.status})`);
-  return res.json();
-}
+  const res = await fetch(`${API_BASE}/get/muns`, { signal });
+  const text = await res.text()
 
-export async function fetchCommittees(munId, signal) {
-  const res = await fetch(`${API_BASE}/muns/${encodeURIComponent(munId)}/committees`, { signal });
-  if (!res.ok) throw new Error(`Could not load committees (${res.status})`);
-  return res.json();
+  if (!res.ok) throw new Error(`Could not load MUNs (${res.status})`);
+
+
+  try{
+    return JSON.parse(text);
+  } catch(err) {
+    throw new Error(`Server returned invalid JSON - Check if server is down. Error ${err}`)
+  }
 }
 
 function initials(name) {
+  if (!name) return "";
   return name
     .split(/\s+/)
     .filter(Boolean)
@@ -40,24 +49,15 @@ function formatDate(value) {
   return isNaN(d) ? value : d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
 }
 
-function CommitteeList({ state, onPick }) {
-  if (!state || state.loading) {
-    return <p className="text-gray-400 text-sm">Loading committees…</p>;
-  }
-  if (state.error) {
-    return (
-      <p role="alert" className="text-red-400 text-sm">
-        {state.error}
-      </p>
-    );
-  }
-  if (state.items.length === 0) {
+function CommitteeList({ committees, onPick }) {
+  const safeCommittees = Array.isArray(committees) ? committees : [];
+  if (safeCommittees.length === 0) {
     return <p className="text-gray-400 text-sm">No committees have been added to this MUN yet.</p>;
   }
   return (
     <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {state.items.map((c) => (
-        <li key={c.id}>
+      {safeCommittees.map((c) => (
+        <li key={c.id || c.name}>
           <button
             type="button"
             onClick={() => onPick(c)}
@@ -77,7 +77,6 @@ export default function JoinCom({ onSelectCommittee }) {
   const [status, setStatus] = useState("loading"); // loading | ready | error
   const [loadError, setLoadError] = useState("");
   const [openId, setOpenId] = useState(null);
-  const [committees, setCommittees] = useState({}); // munId -> { loading, error, items }
 
   const loadMuns = useCallback((signal) => {
     setStatus("loading");
@@ -99,19 +98,12 @@ export default function JoinCom({ onSelectCommittee }) {
     return () => controller.abort();
   }, [loadMuns]);
 
-  const toggle = (mun) => {
-    if (openId === mun.id) {
-      setOpenId(null);
-      return;
-    }
-    setOpenId(mun.id);
-    if (committees[mun.id]?.items) return; // already loaded
-
-    setCommittees((prev) => ({ ...prev, [mun.id]: { loading: true } }));
-    fetchCommittees(mun.id)
-      .then((items) => setCommittees((prev) => ({ ...prev, [mun.id]: { items } })))
-      .catch((err) => setCommittees((prev) => ({ ...prev, [mun.id]: { error: err.message } })));
+  const toggle = (munId) => {
+    setOpenId((prevOpenId) => (prevOpenId === munId ? null : munId));
   };
+
+  // Ensure muns is always a safe array to prevent map crashes
+  const safeMuns = Array.isArray(muns) ? muns : [];
 
   return (
     <div className="min-h-screen bg-gray-900 text-white px-3 sm:px-8 py-10">
@@ -126,7 +118,10 @@ export default function JoinCom({ onSelectCommittee }) {
             <p className="text-red-400 mb-4">{loadError}</p>
             <button
               type="button"
-              onClick={() => loadMuns()}
+              onClick={() => {
+                const controller = new AbortController();
+                loadMuns(controller.signal);
+              }}
               className="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded"
             >
               Try again
@@ -134,13 +129,13 @@ export default function JoinCom({ onSelectCommittee }) {
           </div>
         )}
 
-        {status === "ready" && muns.length === 0 && (
-          <p className="text-gray-400">There are no MUNs to join yet.</p>
+        {status === "ready" && safeMuns.length === 0 && (
+          <p className="text-gray-400">No muns found</p>
         )}
 
-        {status === "ready" && (
+        {status === "ready" && safeMuns.length > 0 && (
           <ul className="space-y-4">
-            {muns.map((mun) => {
+            {safeMuns.map((mun) => {
               const open = openId === mun.id;
               return (
                 <li key={mun.id} className="bg-gray-800 rounded-lg">
@@ -148,20 +143,22 @@ export default function JoinCom({ onSelectCommittee }) {
                     type="button"
                     aria-expanded={open}
                     aria-controls={`committees-${mun.id}`}
-                    onClick={() => toggle(mun)}
+                    onClick={() => toggle(mun.id)}
                     className="w-full flex items-center gap-4 p-5 text-left rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                   >
                     <span
                       aria-hidden="true"
                       className="shrink-0 w-14 h-14 rounded-lg bg-blue-500 flex items-center justify-center text-xl font-bold"
                     >
-                      {initials(mun.name)}
+                      {initials(mun.mun_name)}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-xl font-semibold truncate">{mun.name}</span>
-                      <span className="block text-sm text-gray-400 mt-0.5">
-                        {[mun.location, formatDate(mun.date)].filter(Boolean).join(", ")}
-                      </span>
+                      <span className="block text-xl font-semibold truncate">{mun.mun_name}</span>
+                      {mun.location || mun.date ? (
+                        <span className="block text-sm text-gray-400 mt-0.5">
+                          {[mun.location, formatDate(mun.date)].filter(Boolean).join(", ")}
+                        </span>
+                      ) : null}
                       {mun.description && (
                         <span className="block text-sm text-gray-300 mt-1 line-clamp-2">
                           {mun.description}
@@ -183,7 +180,7 @@ export default function JoinCom({ onSelectCommittee }) {
                   {open && (
                     <div id={`committees-${mun.id}`} className="border-t border-gray-700 p-5">
                       <CommitteeList
-                        state={committees[mun.id]}
+                        committees={mun.committee}
                         onPick={(committee) => onSelectCommittee?.(mun, committee)}
                       />
                     </div>
