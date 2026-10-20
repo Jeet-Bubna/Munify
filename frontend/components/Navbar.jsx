@@ -9,16 +9,19 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { id: 1, text: "Login", link: "/onboard" },
-    { id: 2, text: "Signup", link: "/onboard" },
-    { id: 3, text: "About", link: "/about" },
+    { id: 1, text: "Create a MUN", link: "/make" },
+    { id: 2, text: "Login", link: "/onboard" },
+    { id: 3, text: "Signup", link: "/onboard" },
+    { id: 4, text: "About", link: "/about" },
   ];
 
   return (
     <nav className="bg-gray-800 text-white w-full">
       <div className="flex justify-between items-center h-24 max-w-310 mx-auto px-4">
         <NavLink to="/">
-          <h1 className="text-3xl font-bold text-blue-400 duration-300 hover:text-white">JayBlur</h1>
+          <h1 className="text-3xl font-bold text-blue-400 duration-300 hover:text-white">
+            JayBlur
+          </h1>
         </NavLink>
 
         <ul className="hidden md:flex items-center space-x-2">

@@ -1,17 +1,17 @@
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import Navbar from "../components/Navbar";
-import MakeCom from "./pages/MakeCom";
 import About from "./pages/About";
 import OnBoard from "./pages/OnBoard";
 import JoinCom from "./pages/JoinCom";
+import MakeMun from "./pages/MakeMun";
 
 function App() {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <Navbar/>
       <Routes>
-        <Route path="/make" element={<MakeCom />} />
+        <Route path="/make" element={<MakeMun />} />
         <Route path="/join" element={<JoinCom/>} />
         <Route path="/onboard" element={<OnBoard/>} />
         <Route path="/about" element={<About />} />
