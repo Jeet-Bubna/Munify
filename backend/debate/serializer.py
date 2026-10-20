@@ -5,7 +5,7 @@ from .models import *
 class CommitteeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Committees
-        fields = ['name']
+        fields = ['name', 'agenda']
 
 class MunSerializer(WritableNestedModelSerializer):
     committees = CommitteeSerializer(source='committees_set', many=True)
