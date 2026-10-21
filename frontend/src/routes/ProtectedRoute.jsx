@@ -8,7 +8,9 @@ export const ProtectedRoute = () => {
 
   useEffect(() => {
     if (!token) {
-      toast.error("Please login/signup to access this page");
+      toast.error("Please login/signup to access this page", {
+        id: "auth-required"
+      });
     }
   }, [token]);
 
