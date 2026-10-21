@@ -5,6 +5,7 @@ import About from "./pages/About";
 import OnBoard from "./pages/OnBoard";
 import JoinCom from "./pages/JoinCom";
 import MakeMun from "./pages/MakeMun";
+import ChairDashboard from "./pages/ChairDashboard";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Navbar/>
       <Routes>
         <Route path="/make" element={<MakeMun />} />
+        <Route path="/dashboard" element={<ChairDashboard />} />
         <Route path="/join" element={<JoinCom/>} />
         <Route path="/onboard" element={<OnBoard/>} />
         <Route path="/about" element={<About />} />
