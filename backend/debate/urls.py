@@ -6,5 +6,5 @@ router = DefaultRouter()
 router.register(prefix='muns', viewset=MunViewSet, basename='mun')
 
 urlpatterns = [
-    path('get/', include(router.urls)),
+    path('', include(router.urls)),
 ]

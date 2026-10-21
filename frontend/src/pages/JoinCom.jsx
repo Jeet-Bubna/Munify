@@ -20,7 +20,7 @@ console.log(API_BASE)
  */
 
 export async function fetchMuns(signal) {
-  const res = await fetch(`${API_BASE}/get/muns`, { signal });
+  const res = await fetch(`${API_BASE}/muns`, { signal });
   const text = await res.text()
 
   if (!res.ok) throw new Error(`Could not load MUNs (${res.status})`);
