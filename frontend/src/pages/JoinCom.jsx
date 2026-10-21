@@ -1,19 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 
-const API_BASE = import.meta.env.VITE_API
-console.log(API_BASE)
+const API_BASE = import.meta.env.VITE_API;
 
 /**
  * Expected API response for GET /api/debate/get/muns:
  * [
  *   {
- *     "id": "1",
- *     "mun_name": "Bangalore MUN 2026",
- *     "location": "Bengaluru",
- *     "date": "2026-11-14",
- *     "description": "...",
- *     "committee": [
- *       { "id": "10", "name": "UNSC", "topic": "Maritime security" }
+ *     "name": "GMUN 2026",
+ *     "location": "New Horizon Gurukul",
+ *     "date": "2026-10-14",
+ *     "description": "New mun",
+ *     "image": "https://example.com/logo.png", // Optional image URL
+ *     "committees": [
+ *       { "name": "AIPPM", "agenda": "loksabha" }
  *     ]
  *   }
  * ]
@@ -21,15 +20,14 @@ console.log(API_BASE)
 
 export async function fetchMuns(signal) {
   const res = await fetch(`${API_BASE}/muns`, { signal });
-  const text = await res.text()
+  const text = await res.text();
 
   if (!res.ok) throw new Error(`Could not load MUNs (${res.status})`);
 
-
-  try{
+  try {
     return JSON.parse(text);
-  } catch(err) {
-    throw new Error(`Server returned invalid JSON - Check if server is down. Error ${err}`)
+  } catch (err) {
+    throw new Error(`Server returned invalid JSON - Check if server is down. Error ${err}`);
   }
 }
 
@@ -56,15 +54,15 @@ function CommitteeList({ committees, onPick }) {
   }
   return (
     <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {safeCommittees.map((c) => (
-        <li key={c.id || c.name}>
+      {safeCommittees.map((c, index) => (
+        <li key={c.id || c.name || index}>
           <button
             type="button"
             onClick={() => onPick(c)}
             className="w-full h-full text-left bg-gray-900 border border-gray-700 hover:border-blue-500 rounded px-4 py-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             <span className="block font-semibold">{c.name}</span>
-            {c.topic && <span className="block text-sm text-gray-400 mt-0.5">{c.topic}</span>}
+            {c.agenda && <span className="block text-sm text-gray-400 mt-0.5">{c.agenda}</span>}
           </button>
         </li>
       ))}
@@ -98,11 +96,10 @@ export default function JoinCom({ onSelectCommittee }) {
     return () => controller.abort();
   }, [loadMuns]);
 
-  const toggle = (munId) => {
-    setOpenId((prevOpenId) => (prevOpenId === munId ? null : munId));
+  const toggle = (munKey) => {
+    setOpenId((prevOpenId) => (prevOpenId === munKey ? null : munKey));
   };
 
-  // Ensure muns is always a safe array to prevent map crashes
   const safeMuns = Array.isArray(muns) ? muns : [];
 
   return (
@@ -135,25 +132,34 @@ export default function JoinCom({ onSelectCommittee }) {
 
         {status === "ready" && safeMuns.length > 0 && (
           <ul className="space-y-4">
-            {safeMuns.map((mun) => {
-              const open = openId === mun.id;
+            {safeMuns.map((mun, index) => {
+              const munKey = mun.id || mun.name || index;
+              const open = openId === munKey;
               return (
-                <li key={mun.id} className="bg-gray-800 rounded-lg">
+                <li key={munKey} className="bg-gray-800 rounded-lg">
                   <button
                     type="button"
                     aria-expanded={open}
-                    aria-controls={`committees-${mun.id}`}
-                    onClick={() => toggle(mun.id)}
+                    aria-controls={`committees-${munKey}`}
+                    onClick={() => toggle(munKey)}
                     className="w-full flex items-center gap-4 p-5 text-left rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                   >
                     <span
                       aria-hidden="true"
-                      className="shrink-0 w-14 h-14 rounded-lg bg-blue-500 flex items-center justify-center text-xl font-bold"
+                      className="shrink-0 w-14 h-14 rounded-lg bg-blue-500 flex items-center justify-center text-xl font-bold overflow-hidden"
                     >
-                      {initials(mun.mun_name)}
+                      {mun.image ? (
+                        <img
+                          src={mun.image}
+                          alt={mun.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        initials(mun.name)
+                      )}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-xl font-semibold truncate">{mun.mun_name}</span>
+                      <span className="block text-xl font-semibold truncate">{mun.name}</span>
                       {mun.location || mun.date ? (
                         <span className="block text-sm text-gray-400 mt-0.5">
                           {[mun.location, formatDate(mun.date)].filter(Boolean).join(", ")}
@@ -178,9 +184,9 @@ export default function JoinCom({ onSelectCommittee }) {
                   </button>
 
                   {open && (
-                    <div id={`committees-${mun.id}`} className="border-t border-gray-700 p-5">
+                    <div id={`committees-${munKey}`} className="border-t border-gray-700 p-5">
                       <CommitteeList
-                        committees={mun.committee}
+                        committees={mun.committees}
                         onPick={(committee) => onSelectCommittee?.(mun, committee)}
                       />
                     </div>

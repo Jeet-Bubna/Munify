@@ -27,7 +27,7 @@ class Committees(models.Model):
     `name`: name of the committee. (unsc, aippm, unhrc, etc)
     """
     id = models.AutoField(primary_key=True)
-    mun_id = models.ForeignKey(MUN, on_delete=models.CASCADE)
+    mun = models.ForeignKey(MUN, on_delete=models.CASCADE)
     agenda = models.TextField(default="default_agenda")
     name = models.CharField()
 

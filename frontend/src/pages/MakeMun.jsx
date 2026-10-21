@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-const API_BASE = import.meta.env.API_BASE
 const MAX_COMMITTEES = 20;
 
 /**
@@ -8,16 +7,17 @@ const MAX_COMMITTEES = 20;
  *
  * POST /api/muns
  *   body: {
- *     "name": "...", "location": "...", "date": "2026-11-14", "description": "...",
- *     "committees": [{ "name": "UNSC", "topic": "Maritime security", "maxDelegates": 40 }]
+ *     "name": "...", "location": "...", "date": "2026-11-14", "description": ".....",
+ *     "committees": [{ "name": "UNSC", "agenda": "Maritime security" }]
  *   }
  *   response: the created MUN, e.g. { "id": "1", "name": "...", ... }
  *
- * On failure, a JSON body like { "message": "..." } is shown to the user if present.
  */
 
 export async function createMun(data) {
-  const res = await fetch(`${API_BASE}/muns`, {
+  const VITE_API = import.meta.env.VITE_API
+  console.log(JSON.stringify(data))
+  const res = await fetch(`${VITE_API}/muns/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -39,7 +39,7 @@ export async function createMun(data) {
 const inputClass =
   "w-full bg-gray-900 text-white placeholder-gray-500 border border-gray-700 rounded px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500";
 
-const emptyCommittee = () => ({ name: "", topic: "", maxDelegates: "" });
+const emptyCommittee = () => ({ name: "", agenda: ""});
 
 function Field({ id, label, hint, children }) {
   return (
@@ -108,8 +108,7 @@ export default function MakeMun({ onGoToDashboard }) {
         description: form.description.trim(),
         committees: committees.map((c) => ({
           name: c.name.trim(),
-          topic: c.topic.trim(),
-          maxDelegates: c.maxDelegates === "" ? null : Number(c.maxDelegates),
+          agenda: c.topic.trim(),
         })),
       });
       setCreated(mun);
@@ -226,17 +225,6 @@ export default function MakeMun({ onGoToDashboard }) {
                             />
                           </Field>
                         </div>
-                        <Field id={`c-max-${i}`} label="Max delegates">
-                          <input
-                            id={`c-max-${i}`}
-                            type="number"
-                            min={1}
-                            placeholder="40"
-                            value={c.maxDelegates}
-                            onChange={updateCommittee(i, "maxDelegates")}
-                            className={inputClass.replace("bg-gray-900", "bg-gray-800")}
-                          />
-                        </Field>
                       </div>
                       <Field id={`c-topic-${i}`} label="Agenda / topic (optional)">
                         <input
