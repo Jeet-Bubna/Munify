@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "../provider/authProvider";
 
 const MAX_COMMITTEES = 20;
 
@@ -17,6 +18,7 @@ const MAX_COMMITTEES = 20;
 export async function createMun(data) {
   const VITE_API = import.meta.env.VITE_API
   console.log(JSON.stringify(data))
+
   const res = await fetch(`${VITE_API}/muns/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -60,6 +62,7 @@ export default function MakeMun({ onGoToDashboard }) {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [created, setCreated] = useState(null);
+  const token = useAuth();
 
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 

@@ -10,7 +10,7 @@ class CommitteeSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Committees
-        fields = ['name', 'agenda']
+        fields = ['id','name', 'agenda']
 
 class MunSerializer(WritableNestedModelSerializer):
     """
@@ -22,4 +22,4 @@ class MunSerializer(WritableNestedModelSerializer):
 
     class Meta:
         model = MUN
-        fields = ['name','location','date', 'description', 'committees']
+        fields = ['id', 'name','location','date', 'description', 'committees']
