@@ -14,26 +14,25 @@ const Routes = () => {
   const routesForPublic = [
     {
       path: "/",
-      element: <HomePage />
+      element: <HomePage />,
     },
     {
       path: "/about",
-      element: <About/>
+      element: <About />,
     },
     {
-        path: "/join",
-        element: <JoinCom />
+      path: "/join",
+      element: <JoinCom />,
     },
-    {
-        path: "/make",
-        element: <MakeMun />
-    }
   ];
 
   // Define routes accessible only to authenticated users
   const routesForAuthenticatedOnly = [
     {
-
+      element: <ProtectedRoute />,
+      children: [
+        {path: "/make", element:<MakeMun/>},
+      ]
     },
   ];
 
@@ -41,7 +40,7 @@ const Routes = () => {
   const routesForNotAuthenticatedOnly = [
     {
       path: "/login",
-      element: <Login/>,
+      element: <Login />,
     },
   ];
 
