@@ -16,7 +16,7 @@ function Field({ id, label, children }) {
 const inputClass =
   "w-full bg-gray-900 text-white placeholder-gray-500 border border-gray-700 rounded px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500";
 
-export default function OnBoard({ onLogin, onSignup }) {
+export default function Login({ onLogin, onSignup }) {
   const [mode, setMode] = useState("login");
   const [error, setError] = useState("");
   const [doneMessage, setDoneMessage] = useState(null);

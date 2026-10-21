@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 function HomePage() {
   return (
     <div>
+        <Navbar />
         <div className="text-center text-8xl text-white pt-[25vh]">JayBlur</div>
         <div className="text-center text-3xl text-white pt-[5vh]">
           An online MUN management app
