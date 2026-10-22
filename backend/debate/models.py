@@ -1,6 +1,22 @@
 from django.db import models
 from datetime import date
 
+class Users(models.Model):
+    """
+    Model that stores all the SIGNED IN users
+    ### Fields
+    `id`: User_id, different from chair_id
+    `name`: name of the user 
+    `role`: Can either be chair, or organising member
+    `email`: email
+    `password_hash`: a sha encrypted password hash to verify login
+    """
+    id = models.AutoField(primary_key=True)
+    name = models.CharField()
+    role = models.CharField()
+    email = models.EmailField()
+    password_hash = models.CharField()
+
 class MUN(models.Model):
     """
     Model for different MUNS
@@ -70,10 +86,8 @@ class Chairs(models.Model):
     `password_hash`: Hashed password of the chair, used in login
     """
     id = models.AutoField(primary_key=True)
+    chair_user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     committee_id = models.ForeignKey(Committees, on_delete=models.CASCADE)
-    name = models.CharField()
-    email = models.EmailField()
-    password_hash = models.CharField(max_length=255)
 
 class Delegates(models.Model):
     """
