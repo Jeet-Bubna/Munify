@@ -112,14 +112,20 @@ class Motions(models.Model):
     `time_per_speaker`: time (in seconds) given to each speaker to deliver their speech
     `raised_at`: Automatically generated
     """
+    class Motions(models.TextChoices):
+        MOTION_TO_ENTER_FORMAL_SESSION = "motion to enter formal session"
+        MOTION_TO_ENTER_GSL = "motion to enter GSL"
+        MOTION_TO_ENTER_MOD = "motion to enter a MOD"
+        MOTION_TO_TABLE = "motion to table"
+
     id = models.AutoField(primary_key=True)
     session_id = models.ForeignKey(Sessions, on_delete=models.CASCADE)
     raised_by_id = models.ForeignKey(Delegates, on_delete=models.CASCADE)
-    motion_type = models.CharField()
-    motion_passed = models.BooleanField()
+    motion_type = models.CharField(choices=Motions.choices, default=Motions.MOTION_TO_ENTER_GSL)
+    motion_passed = models.BooleanField(default=False)
     motion_agenda = models.TextField()
-    number_of_speakers = models.PositiveSmallIntegerField()
-    time_per_speaker = models.PositiveSmallIntegerField()
+    number_of_speakers = models.PositiveSmallIntegerField(default=15)
+    time_per_speaker = models.PositiveSmallIntegerField(default=90)
     raised_at = models.DateTimeField(auto_now_add=True)
 
 class Points(models.Model):
@@ -134,11 +140,16 @@ class Points(models.Model):
     `marks_awarded`: marks awarded
     `rasied_at`: automatically generated
     """
+
+    class Points(models.TextChoices):
+        POI = "Point of Information",
+        POO = "Point of Order"
+
     id = models.AutoField(primary_key=True)
     motion_id = models.ForeignKey(Motions, on_delete=models.CASCADE)
     delegate_from_id = models.ForeignKey(Delegates, on_delete=models.CASCADE, related_name="points_set_from")
     delegate_to_id = models.ForeignKey(Delegates, on_delete=models.CASCADE, related_name="points_set_to")
-    point_type = models.CharField()
+    point_type = models.CharField(choices=Points.choices, default=Points.POO)
     marks_awarded = models.PositiveSmallIntegerField()
     raised_at = models.DateTimeField(auto_now_add=True)
 
