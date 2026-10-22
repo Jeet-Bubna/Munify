@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate
 from .models import *
 from .serializer import *
@@ -57,3 +58,13 @@ class UserViewSet(viewsets.ModelViewSet):
                 }, status=status.HTTP_200_OK)
 
             return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def me(self, request):
+        """
+        Endpoint: GET /api/debate/auth/users/me/
+        Returns the profile data of the currently logged-in user.
+        """
+        # request.user is automatically populated by DRF TokenAuthentication
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)

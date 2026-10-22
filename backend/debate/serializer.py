@@ -33,7 +33,10 @@ class UserSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Users
-        fields = ['id', 'username', 'email', 'password']
+        fields = ['id', 'username', 'email', 'password', 'user_permissions']
+
+    def get_permissions(self, obj):
+        return list(obj.get_all_permissions())
 
 class SignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
