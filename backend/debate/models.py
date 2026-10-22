@@ -1,21 +1,18 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 from datetime import date
 
-class Users(models.Model):
+class Users(AbstractUser):
     """
-    Model that stores all the REGISTERED users
-    ### Fields
-    `id`: User_id, different from chair_id
-    `name`: name of the user 
-    `role`: Can either be chair, or organising member
-    `email`: email
-    `password`: a sha encrypted password hash to verify login
+    AbstractUser model for USERS with special "role" column
+    ### Roles, ADMIN, ORGANIZER, CHAIR (default)
     """
-    id = models.AutoField(primary_key=True)
-    name = models.CharField()
-    role = models.CharField()
-    email = models.EmailField()
-    password = models.CharField()
+    class Role(models.TextChoices):
+        ADMIN = "admin"
+        ORGANIZER = "organizer"
+        CHAIR = "chair"
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.CHAIR)
+    email = models.EmailField(unique=True)
 
 class MUN(models.Model):
     """
@@ -83,7 +80,6 @@ class Chairs(models.Model):
     `committee_id`: id of the committee
     `name`: name of the chair
     `email`: email of the chair
-    `password_hash`: Hashed password of the chair, used in login
     """
     id = models.AutoField(primary_key=True)
     chair_user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
