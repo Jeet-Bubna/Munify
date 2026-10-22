@@ -3,7 +3,7 @@ from datetime import date
 
 class Users(models.Model):
     """
-    Model that stores all the SIGNED IN users
+    Model that stores all the REGISTERED users
     ### Fields
     `id`: User_id, different from chair_id
     `name`: name of the user 
@@ -15,7 +15,7 @@ class Users(models.Model):
     name = models.CharField()
     role = models.CharField()
     email = models.EmailField()
-    password_hash = models.CharField()
+    password = models.CharField()
 
 class MUN(models.Model):
     """
