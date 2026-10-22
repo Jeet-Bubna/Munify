@@ -18,9 +18,7 @@ class MunViewSet(viewsets.ModelViewSet):
                 serializer.data
             , status=status.HTTP_201_CREATED)
         else:
-            return Response({
-                "message":"An error occured in validation of data. Please ensure data was correct"
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = Users.objects.all()
@@ -58,5 +56,4 @@ class UserViewSet(viewsets.ModelViewSet):
                     "token":token.key,
                 }, status=status.HTTP_200_OK)
 
-            return Response({
-            }, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
