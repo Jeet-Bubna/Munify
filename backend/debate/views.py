@@ -1,5 +1,8 @@
 from rest_framework.response import Response
 from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate
 from .models import *
 from .serializer import *
 
@@ -18,3 +21,40 @@ class MunViewSet(viewsets.ModelViewSet):
             return Response({
                 "message":"An error occured in validation of data. Please ensure data was correct"
             }, status=status.HTTP_400_BAD_REQUEST)
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = Users.objects.all()
+    serializer_class = UserSerializer
+
+    @action(detail=False, methods=['post'], permission_classes=[])
+    def signup(self, request):
+        serializer = SignupSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            user = serializer.save()
+            # Generate a token immediately upon registration
+            token, created = Token.objects.get_or_create(user=user)
+            
+            return Response({
+                "token": token.key,
+            }, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['post'], permission_classes = [])
+    def login(self, request):
+        serializer = LoginSerializer(data=request.data)
+
+        if serializer.is_valid():
+            username = serializer.validated_data['username'] # type: ignore
+            password = serializer.validated_data['password'] # type: ignore
+
+            # authenticate 
+            user = authenticate(request, username=username, password = password)
+
+            if user is not None:
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({
+                    "token":token.key,
+                }, status=status.HTTP_200_OK)
+
+            return Response({
+            }, status=status.HTTP_401_UNAUTHORIZED)
