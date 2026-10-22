@@ -9,7 +9,7 @@ class Users(models.Model):
     `name`: name of the user 
     `role`: Can either be chair, or organising member
     `email`: email
-    `password_hash`: a sha encrypted password hash to verify login
+    `password`: a sha encrypted password hash to verify login
     """
     id = models.AutoField(primary_key=True)
     name = models.CharField()
