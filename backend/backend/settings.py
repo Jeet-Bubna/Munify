@@ -25,6 +25,9 @@ logger.debug(f"ALLOWED HOSTS: {ALLOWED_HOSTS}")
 if BASE_DIR == None or SECRET_KEY == None :
     logger.critical("One of the critical constants is None. Did you set the environment variable?")
 
+# Default User model for django
+AUTH_USER_MODEL = 'debate.Users'
+
 # App definition
 INSTALLED_APPS = [
     'django.contrib.admin',
