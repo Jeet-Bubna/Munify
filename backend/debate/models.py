@@ -2,17 +2,39 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from datetime import date
 
+from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.db import models
+
 class Users(AbstractUser):
     """
     AbstractUser model for USERS with special "role" column
-    ### Roles, ADMIN, ORGANIZER, CHAIR (default)
+    ### Roles: ADMIN, ORGANIZER, CREATOR (default)
     """
     class Role(models.TextChoices):
         ADMIN = "admin"
-        ORGANIZER = "organizer"
+        CREATOR = "creator"
         CHAIR = "chair"
-    role = models.CharField(max_length=20, choices=Role.choices, default=Role.CHAIR)
+        
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.CREATOR)
     email = models.EmailField(unique=True)
+
+    # Required to prevent reverse accessor clashes with default auth.User
+    groups = models.ManyToManyField(
+        Group,
+        verbose_name='groups',
+        blank=True,
+        help_text='The groups this user belongs to.',
+        related_name='debate_users',
+        related_query_name='debate_user',
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        verbose_name='user permissions',
+        blank=True,
+        help_text='Specific permissions for this user.',
+        related_name='debate_users',
+        related_query_name='debate_user',
+    )
 
 class MUN(models.Model):
     """
